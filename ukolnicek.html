@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Správce Úkolů</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .header {
+            background-color: #537392;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .task-category {
+            border-radius: 5px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .task-list {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .btn-add {
+            width: 100%;
+            font-weight: bold;
+        }
+        .btn-delete {
+            font-size: 0.9rem;
+            color: #dc3545;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="header">
+        <h1>Správce Úkolů</h1>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="task-category">
+                <h4 class="text-center">Kategorie 1</h4>
+                <div class="task-list" id="category1-tasks"></div>
+                <input type="text" id="category1-input" class="form-control my-2" placeholder="Nový úkol">
+                <button class="btn btn-primary btn-add" onclick="addTask('category1')">Přidat úkol</button>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="task-category">
+                <h4 class="text-center">Kategorie 2</h4>
+                <div class="task-list" id="category2-tasks"></div>
+                <input type="text" id="category2-input" class="form-control my-2" placeholder="Nový úkol">
+                <button class="btn btn-primary btn-add" onclick="addTask('category2')">Přidat úkol</button>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="task-category">
+                <h4 class="text-center">Kategorie 3</h4>
+                <div class="task-list" id="category3-tasks"></div>
+                <input type="text" id="category3-input" class="form-control my-2" placeholder="Nový úkol">
+                <button class="btn btn-primary btn-add" onclick="addTask('category3')">Přidat úkol</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadTasks() {
+        const categories = ['category1', 'category2', 'category3'];
+        categories.forEach(category => {
+            const tasks = JSON.parse(localStorage.getItem(category)) || [];
+            tasks.forEach(task => displayTask(task, category));
+        });
+    }
+
+    function addTask(category) {
+        const input = document.getElementById(`${category}-input`);
+        const task = input.value.trim();
+        if (task) {
+            displayTask(task, category);
+            saveTask(task, category);
+            input.value = '';
+        }
+    }
+
+    function displayTask(task, category) {
+        const taskList = document.getElementById(`${category}-tasks`);
+        const taskElement = document.createElement('div');
+        taskElement.className = 'task-item';
+        taskElement.innerHTML = `
+            <span>${task}</span>
+            <span class="btn-delete" onclick="deleteTask('${task}', '${category}', this)">✖</span>
+        `;
+        taskList.appendChild(taskElement);
+    }
+
+    function saveTask(task, category) {
+        const tasks = JSON.parse(localStorage.getItem(category)) || [];
+        tasks.push(task);
+        localStorage.setItem(category, JSON.stringify(tasks));
+    }
+
+    function deleteTask(task, category, element) {
+        let tasks = JSON.parse(localStorage.getItem(category)) || [];
+        tasks = tasks.filter(t => t !== task);
+        localStorage.setItem(category, JSON.stringify(tasks));
+        element.parentElement.remove();
+    }
+
+    document.addEventListener('DOMContentLoaded', loadTasks);
+</script>
+
+</body>
+</html>
